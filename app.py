@@ -16,8 +16,22 @@ def guardar():
     if not datos:
         return jsonify({'error': 'Datos no recibidos'}), 400
     try:
+        # Read existing data if file exists
+        if os.path.exists('datos_personales.json'):
+            with open('datos_personales.json', 'r', encoding='utf-8') as f:
+                lista_datos = json.load(f)
+                # Ensure it's a list
+                if not isinstance(lista_datos, list):
+                    lista_datos = [lista_datos]
+        else:
+            lista_datos = []
+        
+        # Append new data
+        lista_datos.append(datos)
+        
+        # Write updated list back to file
         with open('datos_personales.json', 'w', encoding='utf-8') as f:
-            json.dump(datos, f, ensure_ascii=False, indent=2)
+            json.dump(lista_datos, f, ensure_ascii=False, indent=2)
         return jsonify({'mensaje': 'Datos guardados correctamente'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500

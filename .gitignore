@@ -1,2 +1,4 @@
 .env
 .venv
+datos_personales.json
+__pycache__/
