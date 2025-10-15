@@ -19,10 +19,14 @@ def guardar():
         # Read existing data if file exists
         if os.path.exists('datos_personales.json'):
             with open('datos_personales.json', 'r', encoding='utf-8') as f:
-                lista_datos = json.load(f)
-                # Ensure it's a list
-                if not isinstance(lista_datos, list):
-                    lista_datos = [lista_datos]
+                try:
+                    lista_datos = json.load(f)
+                    # Ensure it's a list
+                    if not isinstance(lista_datos, list):
+                        lista_datos = [lista_datos]
+                except json.JSONDecodeError:
+                    # If file is corrupted, start fresh
+                    lista_datos = []
         else:
             lista_datos = []
         

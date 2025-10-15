@@ -104,6 +104,35 @@ class TestGuardarEndpoint(unittest.TestCase):
         
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', json.loads(response.data))
+    
+    def test_guardar_with_corrupted_file(self):
+        """Test handling of corrupted JSON file"""
+        # Create a corrupted JSON file
+        with open(self.test_file, 'w', encoding='utf-8') as f:
+            f.write('{ corrupted json data }')
+        
+        # Try to save new data
+        datos = {
+            'nombre': 'Juan',
+            'apellidos': 'Pérez',
+            'email': 'juan@example.com',
+            'direccion': 'Calle 123',
+            'fecha_nacimiento': '1990-01-01'
+        }
+        
+        response = self.app.post('/guardar',
+                                data=json.dumps(datos),
+                                content_type='application/json')
+        
+        # Should succeed by starting fresh
+        self.assertEqual(response.status_code, 200)
+        
+        # Verify file now contains valid data
+        with open(self.test_file, 'r', encoding='utf-8') as f:
+            saved_data = json.load(f)
+            self.assertIsInstance(saved_data, list)
+            self.assertEqual(len(saved_data), 1)
+            self.assertEqual(saved_data[0]['nombre'], 'Juan')
 
 
 if __name__ == '__main__':
